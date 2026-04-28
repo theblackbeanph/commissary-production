@@ -63,7 +63,7 @@ interface HomeTabProps {
   isAdmin:           boolean;
   updateAvailable:   boolean;
   goTab:             (t: Tab) => void;
-  setSummTab:        (t: "dashboard" | "log") => void;
+  setSummTab:        (t: "dashboard" | "log") => void;  // see note below
 }
 ```
 
@@ -103,6 +103,8 @@ interface SummaryTabProps {
   isSuperAdmin: boolean;
   isAdmin:      boolean;
   logger:       string;
+  summTab:      "dashboard" | "log";          // see note below
+  setSummTab:   (t: "dashboard" | "log") => void;
 }
 ```
 
@@ -117,6 +119,7 @@ const [pullOuts,         setPullOuts]          = useState<PullOutRecord[]>([]);
 const [currentUser,      setCurrentUser]       = useState<AppUser | null>(null);
 const [authReady,        setAuthReady]         = useState(false);
 const [tab,              setTab]               = useState<Tab>("home");
+const [summTab,          setSummTab]           = useState<"dashboard"|"log">("dashboard");
 const [updateAvailable,  setUpdateAvailable]   = useState(false);
 const pendingPortioning = productions.filter(/* badge count */);
 const goTab = (t: Tab) => { setTab(t); scrollRef.current?.scrollTo({top:0}); };
@@ -140,7 +143,7 @@ const goTab = (t: Tab) => { setTab(t); scrollRef.current?.scrollTo({top:0}); };
 ### HomeTab absorbs
 No state, no handlers. Pure display + goTab calls.
 
-**Note on summTab:** SummaryTab owns `summTab` state internally. HomeTab receives `setSummTab` as a prop so the "Summary" quick-action card can pre-select the "log" sub-tab on navigation.
+**Note on summTab:** `summTab` and `setSummTab` are the one exception — they stay in App.tsx and are passed as props to both HomeTab and SummaryTab. This is necessary because HomeTab's "Summary" quick-action card needs to pre-select the "log" sub-tab when navigating, which requires calling `setSummTab` before the SummaryTab component even mounts. Keeping this state in App.tsx is the simplest correct solution.
 
 ## Extraction Order
 
