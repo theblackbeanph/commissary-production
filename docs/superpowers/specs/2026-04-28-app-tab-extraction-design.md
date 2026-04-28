@@ -62,8 +62,7 @@ interface HomeTabProps {
   isSuperAdmin:      boolean;
   isAdmin:           boolean;
   updateAvailable:   boolean;
-  goTab:             (t: Tab) => void;
-  setSummTab:        (t: "dashboard" | "log") => void;  // see note below
+  goTab:             (t: Tab, summTab?: "dashboard" | "log") => void;
 }
 ```
 
@@ -122,7 +121,11 @@ const [tab,              setTab]               = useState<Tab>("home");
 const [summTab,          setSummTab]           = useState<"dashboard"|"log">("dashboard");
 const [updateAvailable,  setUpdateAvailable]   = useState(false);
 const pendingPortioning = productions.filter(/* badge count */);
-const goTab = (t: Tab) => { setTab(t); scrollRef.current?.scrollTo({top:0}); };
+const goTab = (t: Tab, summTabOverride?: "dashboard" | "log") => {
+  setTab(t);
+  if (summTabOverride) setSummTab(summTabOverride);
+  scrollRef.current?.scrollTo({ top: 0 });
+};
 ```
 
 ### DeliveryTab absorbs
@@ -143,7 +146,19 @@ const goTab = (t: Tab) => { setTab(t); scrollRef.current?.scrollTo({top:0}); };
 ### HomeTab absorbs
 No state, no handlers. Pure display + goTab calls.
 
-**Note on summTab:** `summTab` and `setSummTab` are the one exception — they stay in App.tsx and are passed as props to both HomeTab and SummaryTab. This is necessary because HomeTab's "Summary" quick-action card needs to pre-select the "log" sub-tab when navigating, which requires calling `setSummTab` before the SummaryTab component even mounts. Keeping this state in App.tsx is the simplest correct solution.
+**Note on summTab:** `summTab` and `setSummTab` stay in App.tsx and are passed as props to SummaryTab. HomeTab does not receive `setSummTab` — instead, `goTab` accepts an optional second argument so HomeTab can pre-select the "log" sub-tab in a single call:
+
+```typescript
+// App.tsx
+const goTab = (t: Tab, summTabOverride?: "dashboard" | "log") => {
+  setTab(t);
+  if (summTabOverride) setSummTab(summTabOverride);
+  scrollRef.current?.scrollTo({ top: 0 });
+};
+
+// HomeTab — one call, no extra prop needed
+onClick={() => goTab("summary", "log")}
+```
 
 ## Extraction Order
 
