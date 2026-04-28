@@ -129,19 +129,25 @@ const goTab = (t: Tab, summTabOverride?: "dashboard" | "log") => {
 ```
 
 ### DeliveryTab absorbs
-**State:** form, subview, selectedDel, showFinished, expandedSKU, isSaving, error, showDelEdit, delEditCost, delEditInvoice, showDelDeletePin, delDeletePinEntry, delDeletePinErr, showPin, pinEntry, pinError, showWriteOff, writeOffTarget, writeOffReason, writeOffPin, writeOffPinErr, showBackupPin, backupPinMode, backupPinEntry, backupPinErr, restoreFile
+**State:** form, subview, selectedDel, showFinished, expandedSKU, isSaving, error, showDelEdit, delEditCost, delEditInvoice, showDelDeletePin, delDeletePinEntry, delDeletePinErr, showWriteOff, writeOffTarget, writeOffReason, writeOffPin, writeOffPinErr
 
 **Handlers:** saveDelivery, handleEditDelivery, handleDeleteDelivery, handleWriteOff
+
+**Modals:** Write Off modal, Delete Delivery PIN modal (both triggered from delivery detail view)
 
 ### ProductionTab absorbs
 **State:** form, subview, selectedProd, portionInput, editPortions, editPortionVal, voidPin, voidPinEntry, voidPinError, voidTarget, splitSku, splitBatches, splitRecipes, isSaving, error
 
 **Handlers:** handleSingle, handleMixed, handleSplit, handleVoid, handleEditPortions
 
-### SummaryTab absorbs
-**State:** summTab, logRange, logRecipe, skuCatTab, dashRange, showPOReport, poRepStart, poRepEnd
+**Modals:** Void PIN modal (triggered from batch detail view)
 
-**Handlers:** none (read-only, no Firebase writes)
+### SummaryTab absorbs
+**State:** logRange, logRecipe, skuCatTab, dashRange, showPOReport, poRepStart, poRepEnd, showRecipes, showPortionGuide, showPin, pinEntry, pinError, showBackupPin, backupPinMode, backupPinEntry, backupPinErr, restoreFile, backupError
+
+**Handlers:** handlePinKey (Clear All Data — clears all Firestore collections), backup export/restore handlers
+
+**Modals:** Recipes modal, Portion Guide modal, Pull Out Report modal, Backup PIN modal, Clear Data PIN modal (all triggered from within Summary JSX)
 
 ### HomeTab absorbs
 No state, no handlers. Pure display + goTab calls.
