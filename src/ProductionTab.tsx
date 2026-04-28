@@ -3,26 +3,21 @@ import { saveDoc, COLLECTIONS } from "./firebase";
 import { SKUS, RECIPES, RECIPE_PROD_TYPE, SKU_RECIPES, TEAM, CLEAR_PIN, BUFFER } from "./data";
 import { todayISO, fmt, fmtKg, yieldCls, recipeMatch, genProdBatch } from "./utils";
 import type { InvEntry } from "./InventoryTab";
-import type { Tab } from "./App";
-
 interface ProductionTabProps {
   deliveries:   any[];
   productions:  any[];
   invEntries:   InvEntry[];
   isSuperAdmin: boolean;
-  isAdmin:      boolean;
   logger:       string;
-  goTab:        (t: Tab) => void;
 }
 
 export default function ProductionTab({
   deliveries, productions, invEntries,
-  isSuperAdmin, isAdmin, logger, goTab,
+  isSuperAdmin, logger,
 }: ProductionTabProps) {
   const [subview,       setSubview]       = useState<"list"|"single"|"mixed"|"split"|"batchdetail">("list");
   const [form,          setForm]          = useState<any>({ date: todayISO() });
   const [error,         setError]         = useState("");
-  const [isSaving,      setIsSaving]      = useState(false);
   const [selectedProd,  setSelectedProd]  = useState<any>(null);
   const [portionInput,  setPortionInput]  = useState("");
   const [editPortions,  setEditPortions]  = useState(false);
@@ -283,7 +278,6 @@ export default function ProductionTab({
     saveDoc(COLLECTIONS.productions, updated)
       .catch(() => setError("Save failed — check your connection and try again."));
     setPortionInput(""); clearErr();
-    setSelectedProd(updated);
   };
 
   // ── EDIT ACTUAL PORTIONS ─────────────────────────────────────────────────────
@@ -300,7 +294,6 @@ export default function ProductionTab({
     saveDoc(COLLECTIONS.productions, updatedProd)
       .catch(() => setError("Save failed — check your connection and try again."));
     setEditPortions(false); setEditPortionVal(""); clearErr();
-    setSelectedProd(updatedProd);
   };
 
   // ── VOID PIN HANDLER ─────────────────────────────────────────────────────────

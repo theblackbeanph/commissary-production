@@ -683,9 +683,7 @@ export default function App() {
               productions={productions}
               invEntries={invEntries}
               isSuperAdmin={isSuperAdmin}
-              isAdmin={isAdmin}
               logger={logger}
-              goTab={goTab}
             />
           )}
 
