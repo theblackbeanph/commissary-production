@@ -1966,14 +1966,11 @@ export default function App() {
           })()}
 
           {/* ══ SUMMARY ══ */}
-          {tab==="summary" && subview==="list" && (
+          {tab === "summary" && (
             <SummaryTab
               deliveries={deliveries}
               productions={productions}
               pullOuts={pullOuts}
-              currentUser={currentUser}
-              isSuperAdmin={isSuperAdmin}
-              isAdmin={isAdmin}
               isViewer={isViewer}
               logger={logger}
               summTab={summTab}

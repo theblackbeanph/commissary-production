@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { db as _db, COLLECTIONS, clearCollection, saveBatch } from "./firebase";
+import { COLLECTIONS, clearCollection, saveBatch } from "./firebase";
 import {
   SKUS, SKU_CATEGORY, SKU_CAT_LABELS,
   RECIPES, SKU_RECIPES, LOOSE_GUIDE, BUFFER, PROBLEM_YIELD, CLEAR_PIN,
@@ -12,15 +12,11 @@ import {
 } from "./utils";
 import type { PullOutRecord } from "./InventoryTab";
 import type { Tab } from "./App";
-import type { AppUser } from "./firebase";
 
 interface SummaryTabProps {
   deliveries:      any[];
   productions:     any[];
   pullOuts:        PullOutRecord[];
-  currentUser:     AppUser | null;
-  isSuperAdmin:    boolean;
-  isAdmin:         boolean;
   isViewer:        boolean;
   logger:          string;
   summTab:         "dashboard" | "log";
@@ -32,7 +28,7 @@ interface SummaryTabProps {
 
 export default function SummaryTab({
   deliveries, productions, pullOuts,
-  currentUser: _currentUser, isSuperAdmin: _isSuperAdmin, isAdmin: _isAdmin, isViewer, logger,
+  isViewer, logger,
   summTab, setSummTab, goTab,
   calcPortioning,
 }: SummaryTabProps) {
@@ -53,7 +49,6 @@ export default function SummaryTab({
   const [backupPinMode, setBackupPinMode] = useState<"export"|"restore">("export");
   const [backupPinEntry,setBackupPinEntry]= useState("");
   const [backupPinErr,  setBackupPinErr]  = useState(false);
-  const [restoreFile,   setRestoreFile]   = useState<File|null>(null);
   const [backupError,   setBackupError]   = useState("");
   const restoreInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -152,22 +147,6 @@ export default function SummaryTab({
       const k=p.date||"unknown"; if(!acc[k]) acc[k]=[]; acc[k].push(p); return acc;
     },{});
   const sortedDates = Object.keys(groupedByDate).sort((a,b)=>b.localeCompare(a));
-
-  // ── YIELD HISTORY ─────────────────────────────────────────────────────────
-  const _yieldHistory = (()=>{
-    const map: Record<string,any[]>={};
-    for (const p of productions.filter((x:any)=>!x.voided)){ if(!map[p.recipe||p.ingredients?.[0]?.item||"?"])map[p.recipe||p.ingredients?.[0]?.item||"?"]=[]; map[p.recipe||p.ingredients?.[0]?.item||"?"].push(p); }
-    return Object.entries(map).map(([item,runs])=>{
-      const sorted=[...runs].sort((a,b)=>(a.date||"").localeCompare(b.date||""));
-      const yields=sorted.map(r=>r.yield);
-      const avg=yields.reduce((s,y)=>s+y,0)/yields.length;
-      const best=sorted.reduce((b,r)=>r.yield>b.yield?r:b);
-      const worst=sorted.reduce((w,r)=>r.yield<w.yield?r:w);
-      let trend:"up"|"down"|"stable"="stable";
-      if (yields.length>=2){ const mid=Math.ceil(yields.length/2); const diff=yields.slice(-mid).reduce((s,y)=>s+y,0)/mid-yields.slice(0,mid).reduce((s,y)=>s+y,0)/mid; if(diff>0.03) trend="up"; else if(diff<-0.03) trend="down"; }
-      return { item,runs:sorted,count:sorted.length,avg,best,worst,trend };
-    }).sort((a,b)=>b.count-a.count);
-  })();
 
   // ── CLEAR DATA PIN ────────────────────────────────────────────────────────
   const handlePinKey = (key:string) => {
@@ -684,7 +663,7 @@ export default function SummaryTab({
               )
             )}
           </div>
-          <button className="pin-cancel" onClick={()=>{ setShowBackupPin(false); setBackupPinEntry(""); setRestoreFile(null); }}>CANCEL</button>
+          <button className="pin-cancel" onClick={()=>{ setShowBackupPin(false); setBackupPinEntry(""); }}>CANCEL</button>
         </div>
       </div>
     )}
