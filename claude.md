@@ -11,15 +11,19 @@ A production-grade kitchen operations dashboard built in React + TypeScript, bac
 - **Hosting:** Vercel (CLI deploy via `vercel --prod`)
 - **Billing:** Firebase Blaze plan (pay-as-you-go, upgraded from Spark free tier)
 - **Fonts:** DM Mono + Syne (Google Fonts)
-- **No UI library** — all custom CSS in a single `<style>` block inside App.tsx
+- **No UI library** — all custom CSS in a single `<style>` block inside App.tsx (global, applies to all tab components)
 
 ---
 
 ## File Structure
 ```
 src/
-├── App.tsx          — Main app (2,500+ lines); all 5 tabs, all state
-├── InventoryTab.tsx — Inventory component (~700 lines)
+├── App.tsx          — Shell + shared state (~745 lines); auth, tab nav, Firestore listeners, global CSS
+├── HomeTab.tsx      — Home tab component (~175 lines); pure display + goTab calls, no local state
+├── DeliveryTab.tsx  — Delivery tab component (~485 lines); owns delivery state + write handlers
+├── ProductionTab.tsx — Production tab component (~855 lines); owns production state + write handlers
+├── SummaryTab.tsx   — Summary tab component (~715 lines); owns summary state + write handlers
+├── InventoryTab.tsx — Inventory tab component (~833 lines); owns inventory state + write handlers
 ├── firebase.ts      — Firebase config, helpers, auth, user roles
 ├── data.ts          — All constants: SKUs, recipes, inventory items, LOOSE_PACK_SIZES, RECIPE_ALIASES, TEAM, CLEAR_PIN
 ├── utils.ts         — All pure helpers: todayISO (PHT), formatters, CSV export
@@ -35,13 +39,17 @@ public/
 ### Bottom Nav (5 tabs)
 `Home | Delivery | Prod | Inventory | Summary`
 
-### State (all in App.tsx)
+### State
+App.tsx owns shared Firestore state and navigation only:
 ```typescript
-deliveries:   any[]        // from Firestore 'deliveries' collection
-productions:  any[]        // from Firestore 'productions' collection
-invEntries:   InvEntry[]   // from Firestore 'invEntries' collection
+deliveries:   any[]           // from Firestore 'deliveries' collection
+productions:  any[]           // from Firestore 'productions' collection
+invEntries:   InvEntry[]      // from Firestore 'invEntries' collection
 pullOuts:     PullOutRecord[] // from Firestore 'pullOuts' collection
+tab:          Tab             // active tab ("home"|"delivery"|"production"|"inventory"|"summary")
+summTab:      "dashboard"|"log"  // Summary sub-tab (stays in App.tsx — HomeTab sets it via goTab override)
 ```
+Each tab component owns its own local state (form fields, subview, modals, PIN state, etc.).
 
 ### Firebase Collections
 ```
@@ -485,7 +493,7 @@ New production mode (alongside Single and Mixed). Entry point: **✂ SPLIT BATCH
 
 **Workflow:** Select ingredient SKU → pick batches + enter raw/trim per batch → allocate total EP across recipe rows → submit.
 
-**Handler:** `handleSplit()` in App.tsx. Each recipe gets a proportional share of the raw weight and trim (`raw = totalRaw × fraction`, `trim = totalTrim × fraction`). Each delivery's `usedIn` gets one entry per recipe with proportional `rawUsed`. Productions are saved with `splitBatch: true` marker.
+**Handler:** `handleSplit()` in ProductionTab.tsx. Each recipe gets a proportional share of the raw weight and trim (`raw = totalRaw × fraction`, `trim = totalTrim × fraction`). Each delivery's `usedIn` gets one entry per recipe with proportional `rawUsed`. Productions are saved with `splitBatch: true` marker.
 
 **Validation:** sum of recipe EP allocations must equal total EP (within 1g tolerance). Cooked recipes require cooked weight input. Minimum 2 recipes required.
 
@@ -537,6 +545,7 @@ Example:
 ## Pending / Future Work
 
 ### General
+- [x] App.tsx tab extraction — extracted all 5 tabs into their own component files (2026-04-28)
 - [ ] Admin panel for adding items/recipes without code changes
 
 ### Branch Inventory Integration (Commissary App Side)
