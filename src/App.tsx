@@ -986,9 +986,7 @@ export default function App() {
             <DeliveryTab
               deliveries={deliveries}
               productions={productions}
-              currentUser={currentUser}
               isSuperAdmin={isSuperAdmin}
-              isAdmin={isAdmin}
               logger={logger}
               goTab={goTab}
             />

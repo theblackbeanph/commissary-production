@@ -3,21 +3,18 @@ import { saveDoc, deleteDocument, COLLECTIONS } from "./firebase";
 import { SKUS, CLEAR_PIN } from "./data";
 import { todayISO, fmtKg } from "./utils";
 import type { Tab } from "./App";
-import type { AppUser } from "./firebase";
 
 interface DeliveryTabProps {
   deliveries:   any[];
   productions:  any[];
-  currentUser:  AppUser | null;
   isSuperAdmin: boolean;
-  isAdmin:      boolean;
   logger:       string;
   goTab:        (t: Tab) => void;
 }
 
 export default function DeliveryTab({
-  deliveries, productions, currentUser,
-  isSuperAdmin, isAdmin, logger, goTab,
+  deliveries, productions,
+  isSuperAdmin, logger, goTab,
 }: DeliveryTabProps) {
   const [subview,      setSubview]      = useState<"list"|"form"|"deliverydetail"|"finished">("list");
   const [form,         setForm]         = useState<any>({});
@@ -120,8 +117,6 @@ export default function DeliveryTab({
       {/* ══ DELIVERY DETAIL ══ */}
       {subview==="deliverydetail" && selectedDel && (()=>{
         const d = deliveries.find(x=>x.id===selectedDel.id)||selectedDel;
-        const totalUsed = (d.usedIn||[]).reduce((s:number,u:any)=>s+u.rawUsed,0);
-        const pct = d.weight ? (totalUsed/d.weight)*100 : 0;
         return <>
           <div className="page-header">
             <div className="page-header-row">
@@ -190,6 +185,8 @@ export default function DeliveryTab({
               {(d.usedIn||[]).map((u:any,i:number)=>{
                 const linkedProd = productions.find((p:any)=>p.prodBatchCode===u.prodBatchCode);
                 return (
+                  <>
+                  {/* TODO(Task 5): restore onClick to navigate to ProductionTab batch detail once ProductionTab is extracted */}
                   <div key={i} className="used-in-row">
                     <div>
                       <div className="used-in-code" style={{color:linkedProd?"var(--accent)":"var(--muted)"}}>{u.prodBatchCode}</div>
@@ -197,6 +194,7 @@ export default function DeliveryTab({
                     </div>
                     <div style={{fontSize:13,color:"var(--text)",textAlign:"right"}}>{fmtKg(u.rawUsed)}</div>
                   </div>
+                  </>
                 );
               })}
             </div>
