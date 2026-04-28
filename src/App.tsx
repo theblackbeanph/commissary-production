@@ -22,6 +22,9 @@ import {
   exportBackup, importBackup,
 } from "./utils";
 
+// ── TYPES ──────────────────────────────────────────────────────────────────────
+export type Tab = "home" | "delivery" | "production" | "inventory" | "summary";
+
 // ── STORAGE ───────────────────────────────────────────────────────────────────
 function load<T>(key: string, fallback: T): T {
   try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : fallback; }
@@ -583,7 +586,11 @@ export default function App() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const setF     = (k:string,v:any) => setForm((p:any)=>({...p,[k]:v}));
   const clearErr = () => setError("");
-  const goTab    = (t: typeof tab) => { setTab(t); setSubview("list"); setForm({}); clearErr(); setSelectedProd(null); setSelectedDel(null); setShowFinished(false); setTimeout(()=>{ scrollRef.current?.scrollTo({top:0}); },0); };
+  const goTab    = (t: Tab, summTabOverride?: "dashboard" | "log") => {
+    setTab(t);
+    if (summTabOverride) setSummTab(summTabOverride);
+    setTimeout(() => { scrollRef.current?.scrollTo({ top: 0 }); }, 0);
+  };
 
   const pendingPortioning = productions.filter(p=>{
     if (p.voided) return false;
