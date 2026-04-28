@@ -503,6 +503,7 @@ export default function App() {
   // ── APP VERSION — bump in Firestore settings/appVersion to notify users ───
   const APP_VERSION = 3.5;
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [fbReady,         setFbReady]         = useState(false);
   useEffect(()=>{
     const ref = doc(db, COLLECTIONS.settings, "appVersion");
     const unsub = onSnapshot(ref, snap => {
