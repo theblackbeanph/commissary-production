@@ -456,7 +456,7 @@ export default function App() {
   const [loginError,   setLoginError]  = useState("");
   const [loginLoading, setLoginLoading]= useState(false);
   const [customName,   setCustomName]  = useState("");
-  const [tab,          setTab]         = useState<"home"|"delivery"|"production"|"inventory"|"summary">("home");
+  const [tab,          setTab]         = useState<Tab>("home");
   const [subview,      setSubview]     = useState<"list"|"form"|"single"|"mixed"|"split"|"batchdetail"|"deliverydetail"|"finished">("list");
   const [deliveries,   setDeliveries]  = useState<any[]>([]);
   const [productions,  setProductions] = useState<any[]>([]);
@@ -1226,7 +1226,7 @@ export default function App() {
             <div style={{fontSize:11,color:"var(--muted)",letterSpacing:"0.08em",marginBottom:20}}>The Black Bean Commissary Prod Dashboard</div>
 
             {pendingPortioning.length>0 && (
-              <div className="alert-banner" onClick={()=>{ goTab("summary"); setSummTab("log"); }}>
+              <div className="alert-banner" onClick={()=>goTab("summary", "log")}>
                 <div className="alert-title">⚠ {pendingPortioning.length} batch{pendingPortioning.length>1?"es":""} awaiting portioning</div>
                 <div className="alert-items">{pendingPortioning.map(p=>`${p.recipe} · ${p.prodBatchCode}`).join("\n")}</div>
               </div>
@@ -1296,7 +1296,7 @@ export default function App() {
                   </div>
 
                   {/* Items Prod */}
-                  <div className="snapshot-card clickable" onClick={()=>{ goTab("summary"); setSummTab("log"); }}>
+                  <div className="snapshot-card clickable" onClick={()=>goTab("summary", "log")}>
                     <div className="snapshot-val">{todayProds.length}</div>
                     <div className="snapshot-lbl">Items Prod</div>
                     {(todayProds.length>0||yestProds.length>0)&&(
