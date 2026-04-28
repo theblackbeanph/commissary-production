@@ -26,11 +26,6 @@ interface SummaryTabProps {
   summTab:         "dashboard" | "log";
   setSummTab:      (t: "dashboard" | "log") => void;
   goTab:           (t: Tab, summTab?: "dashboard" | "log") => void;
-  // For problem batch navigation into production batchdetail
-  setSelectedProd: (p: any) => void;
-  setSubview:      (v: any) => void;
-  setPortionInput: (v: string) => void;
-  clearErr:        () => void;
   // calcPortioning passed from App so it uses the same RECIPES data
   calcPortioning:  (prod: any) => any;
 }
@@ -39,7 +34,6 @@ export default function SummaryTab({
   deliveries, productions, pullOuts,
   currentUser: _currentUser, isSuperAdmin: _isSuperAdmin, isAdmin: _isAdmin, isViewer, logger,
   summTab, setSummTab, goTab,
-  setSelectedProd, setSubview, setPortionInput, clearErr,
   calcPortioning,
 }: SummaryTabProps) {
   // ── STATE ──────────────────────────────────────────────────────────────────
@@ -280,7 +274,7 @@ export default function SummaryTab({
         <div className="problem-card">
           <div className="problem-title">Below 70% yield threshold</div>
           {problemBatches.map(p=>(
-            <div key={p.id} className="problem-item" style={{cursor:"pointer"}} onClick={()=>{ setSelectedProd(p); setPortionInput(""); clearErr(); setSubview("batchdetail"); }}>
+            <div key={p.id} className="problem-item" style={{cursor:"pointer"}} onClick={()=>{ goTab("production"); }}>
               {p.prodBatchCode} → {(p.yield*100).toFixed(1)}% yield {p.recipe?`(${p.recipe})`:""}
             </div>
           ))}
@@ -436,7 +430,7 @@ export default function SummaryTab({
                     const pc=calcPortioning(p);
                     const isPending=pc&&p.actualPortions===undefined;
                     return (
-                      <div key={p.id} className="record-card" style={p.voided?{opacity:0.45}:{}} onClick={()=>{ setSelectedProd(p); setPortionInput(""); clearErr(); setSubview("batchdetail"); }}>
+                      <div key={p.id} className="record-card" style={p.voided?{opacity:0.45}:{}} onClick={()=>{ goTab("production"); }}>
                         <div className="record-top">
                           <div>
                             <div className="record-name">{p.recipe||p.ingredients?.[0]?.item||"Production"}</div>

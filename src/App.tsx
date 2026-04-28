@@ -1979,10 +1979,6 @@ export default function App() {
               summTab={summTab}
               setSummTab={setSummTab}
               goTab={goTab}
-              setSelectedProd={setSelectedProd}
-              setSubview={setSubview}
-              setPortionInput={setPortionInput}
-              clearErr={clearErr}
               calcPortioning={calcPortioning}
             />
           )}
