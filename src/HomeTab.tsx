@@ -8,20 +8,18 @@ interface HomeTabProps {
   deliveries:        any[];
   productions:       any[];
   invEntries:        InvEntry[];
-  pullOuts:          PullOutRecord[];
   pendingPortioning: any[];
   currentUser:       any;
   isSuperAdmin:      boolean;
   isAdmin:           boolean;
-  updateAvailable:   boolean;
   currentDate:       string;
   goTab:             (t: Tab, summTab?: "dashboard" | "log") => void;
 }
 
 export default function HomeTab({
-  deliveries, productions, invEntries, pullOuts,
+  deliveries, productions, invEntries,
   pendingPortioning, currentUser, isSuperAdmin, isAdmin,
-  updateAvailable, currentDate, goTab,
+  currentDate, goTab,
 }: HomeTabProps) {
   return (
     <>

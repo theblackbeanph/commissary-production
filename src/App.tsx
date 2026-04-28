@@ -1062,12 +1062,10 @@ export default function App() {
               deliveries={deliveries}
               productions={productions}
               invEntries={invEntries}
-              pullOuts={pullOuts}
               pendingPortioning={pendingPortioning}
               currentUser={currentUser}
               isSuperAdmin={isSuperAdmin}
               isAdmin={isAdmin}
-              updateAvailable={updateAvailable}
               currentDate={currentDate}
               goTab={goTab}
             />
